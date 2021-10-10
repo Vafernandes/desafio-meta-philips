@@ -1,9 +1,9 @@
-import { TabelaClientes } from "./components/TabelaClientes/index.jsx";
+import { GerenciamentoDeClientes } from "./pages/GerenciamentoDeClientes.jsx";
 
 function App() {
   return (
-    <TabelaClientes />
+    <GerenciamentoDeClientes />
   );
 }
- 
+
 export default App;

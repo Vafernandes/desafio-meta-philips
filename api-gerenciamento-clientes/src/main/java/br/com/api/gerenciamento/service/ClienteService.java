@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,13 +23,13 @@ public class ClienteService {
 	private EnderecoService enderecoService;
 	
 	@Transactional
-	public Cliente salvar(Cliente cliente) {		
+	public Cliente salvar(Cliente cliente) {
 		
 		for (Endereco endereco : cliente.getEnderecos()) {
 			endereco.setCliente(cliente);
-			enderecoService.save(endereco);
+			enderecoService.salvar(endereco);
 		}
-
+		
 		cliente.setId(null);
 		cliente.setDataCriacao(new Date());
 		cliente.setDataAtualizacao(new Date());
@@ -38,7 +39,7 @@ public class ClienteService {
 	
 	public Cliente buscarPorCpf(String cpf) {
 		Optional<Cliente> cliente = clienteRepository.findByCpf(cpf);
-		return cliente.get();
+		return cliente.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado! CPF: " + cpf + ", Tipo"+ Cliente.class, cpf));
 	}
 	
 	public Cliente buscarPorId(Integer id) {
@@ -48,10 +49,10 @@ public class ClienteService {
 	}
 
 	public Cliente editar(Cliente clienteRequest) {
-		Cliente cliente = buscarPorId(clienteRequest.getId());
+		Cliente cliente = buscarPorId(clienteRequest.getId()); 
 		atualizarDadosDeUmObejto(clienteRequest, cliente);
 		
-		cliente.setDataAtualizacao(new Date());
+		cliente.setDataAtualizacao(new Date()); 
 		
 		return clienteRepository.save(cliente);
 	}
@@ -60,6 +61,15 @@ public class ClienteService {
 		clienteModel.setNomeCompleto(clienteRequest.getNomeCompleto());
 		clienteModel.setCpf(clienteRequest.getCpf());
 		clienteModel.setDataNascimento(clienteRequest.getDataNascimento());
+		
+		for(Endereco endereco : clienteRequest.getEnderecos()) {
+			if(endereco.getCliente() == null) {
+				endereco.setCliente(clienteRequest);
+			}
+			enderecoService.atualizar(endereco);
+		}
+		
+		clienteModel.setEnderecos(clienteRequest.getEnderecos());
 	}
 
 	public List<Cliente> listarTodos() {

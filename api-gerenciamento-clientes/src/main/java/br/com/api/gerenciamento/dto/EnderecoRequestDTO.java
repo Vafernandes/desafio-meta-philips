@@ -1,13 +1,9 @@
 package br.com.api.gerenciamento.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import br.com.api.gerenciamento.model.Endereco;
 
-public class EnderecoResponseDTO {
-	
-	private Integer id;
+public class EnderecoRequestDTO {
+
 	private String logradouro;
 	private String numero;
 	private String complemento;
@@ -15,11 +11,9 @@ public class EnderecoResponseDTO {
 	private String cep;
 	private String cidade;
 	private String estado;
-	private Integer id_cliente;
 
-	public EnderecoResponseDTO(Integer id, String logradouro, String numero, String complemento, String bairro, String cep,
+	public EnderecoRequestDTO(String logradouro, String numero, String complemento, String bairro, String cep,
 			String cidade, String estado, Integer id_cliente) {
-		this.id = id;
 		this.logradouro = logradouro;
 		this.numero = numero;
 		this.complemento = complemento;
@@ -27,31 +21,18 @@ public class EnderecoResponseDTO {
 		this.cep = cep;
 		this.cidade = cidade;
 		this.estado = estado;
-		this.id_cliente = id_cliente;
 	}
 
-	public static List<EnderecoResponseDTO> fromModel(List<Endereco> enderecos) {
-		List<EnderecoResponseDTO> enderecoResponseDTOs = new ArrayList<EnderecoResponseDTO>();
-		
-		for (Endereco endereco : enderecos) {
-			enderecoResponseDTOs.add(fromModel(endereco));
-		}
-		
-		return enderecoResponseDTOs;
-	}
+	public static Endereco toModel(EnderecoRequestDTO enderecoRequestDTO) {
+		Endereco endereco = new Endereco();
+		endereco.setLogradouro(enderecoRequestDTO.getLogradouro());
+		endereco.setNumero(enderecoRequestDTO.getNumero());
+		endereco.setCep(enderecoRequestDTO.getCep());
+		endereco.setBairro(enderecoRequestDTO.getBairro());
+		endereco.setCidade(enderecoRequestDTO.getCidade());
+		endereco.setEstado(enderecoRequestDTO.getEstado());
 
-	public static EnderecoResponseDTO fromModel(Endereco endereco) {
-		return new EnderecoResponseDTO(endereco.getId(), endereco.getLogradouro(), endereco.getNumero(), endereco.getComplemento(),
-				endereco.getBairro(), endereco.getCep(), endereco.getCidade(), endereco.getEstado(),
-				endereco.getCliente().getId());
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
+		return endereco;
 	}
 
 	public String getLogradouro() {
@@ -108,14 +89,6 @@ public class EnderecoResponseDTO {
 
 	public void setEstado(String estado) {
 		this.estado = estado;
-	}
-
-	public Integer getId_cliente() {
-		return id_cliente;
-	}
-
-	public void setId_cliente(Integer id_cliente) {
-		this.id_cliente = id_cliente;
 	}
 
 }

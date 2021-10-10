@@ -202,7 +202,7 @@ const TabelaClientes = () => {
 
 
     return (
-        <div className="p-d-flex p-flex-column" style={{ margin: 50 }}>
+        <div className="p-d-flex p-flex-column" style={{ margin: 50 }}> 
             <Toast ref={toast} />
             <h1>Gerenciamento de Clientes</h1>
             

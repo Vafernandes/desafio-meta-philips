@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import br.com.api.gerenciamento.dto.ClienteCreateResponseDTO;
 import br.com.api.gerenciamento.model.Cliente;
 import br.com.api.gerenciamento.service.ClienteService;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/gerenciamento-cliente")
 public class ClienteController {
@@ -59,10 +61,17 @@ public class ClienteController {
 	public ResponseEntity<ClienteCreateResponseDTO> buscarPorId(@PathVariable Integer id) {
 		return ResponseEntity.ok().body(ClienteCreateResponseDTO.fromModel(clienteService.buscarPorId(id)));
 	}
+	
+	@GetMapping("/cliente/{cpf}")
+	public ResponseEntity<ClienteCreateResponseDTO> buscarPorCPF(@PathVariable String cpf) {
+		cpf.toString();
+		return ResponseEntity.ok().body(ClienteCreateResponseDTO.fromModel(clienteService.buscarPorCpf(cpf)));
+	}
 
 	@GetMapping
 	public ResponseEntity<List<ClienteResponseDTO>> listarTodos() {
 		List<ClienteResponseDTO> clienteResponseDTOs = ClienteResponseDTO.fromModel(clienteService.listarTodos());
 		return ResponseEntity.ok().body(clienteResponseDTOs);
 	}
+
 }

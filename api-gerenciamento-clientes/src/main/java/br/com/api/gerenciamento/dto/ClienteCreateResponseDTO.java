@@ -7,7 +7,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.api.gerenciamento.model.Cliente;
-import br.com.api.gerenciamento.model.Endereco;
 import br.com.api.gerenciamento.util.ConstantesUtils;
 
 public class ClienteCreateResponseDTO {
@@ -19,7 +18,7 @@ public class ClienteCreateResponseDTO {
 	@JsonFormat(pattern = ConstantesUtils.DATE_FORMAT_UTIL)
 	private Date dataNascimento;
 
-	private List<Endereco> enderecos = new ArrayList<Endereco>();
+	private List<EnderecoResponseDTO> enderecos = new ArrayList<EnderecoResponseDTO>();
 
 	@JsonFormat(pattern = ConstantesUtils.DATE_TIME_FORMAT_UTIL)
 	private Date dataCriacao;
@@ -28,7 +27,7 @@ public class ClienteCreateResponseDTO {
 	private Date dataAtualizacao;
 
 	public ClienteCreateResponseDTO(Integer id, String nomeCompleto, String cpf, Date dataNascimento,
-			List<Endereco> enderecos, Date dataCriacao, Date dataAtualizacao) {
+			List<EnderecoResponseDTO> enderecos, Date dataCriacao, Date dataAtualizacao) {
 		super();
 		this.id = id;
 		this.nomeCompleto = nomeCompleto;
@@ -41,7 +40,7 @@ public class ClienteCreateResponseDTO {
 
 	public static ClienteCreateResponseDTO fromModel(Cliente cliente) {
 		return new ClienteCreateResponseDTO(cliente.getId(), cliente.getNomeCompleto(), cliente.getCpf(),
-				cliente.getDataNascimento(), cliente.getEnderecos(), cliente.getDataCriacao(),
+				cliente.getDataNascimento(), EnderecoResponseDTO.fromModel(cliente.getEnderecos()), cliente.getDataCriacao(),
 				cliente.getDataAtualizacao());
 	}
 	
@@ -85,11 +84,11 @@ public class ClienteCreateResponseDTO {
 		this.dataNascimento = dataNascimento;
 	}
 
-	public List<Endereco> getEnderecos() {
+	public List<EnderecoResponseDTO> getEnderecos() {
 		return enderecos;
 	}
 
-	public void setEnderecos(List<Endereco> enderecos) {
+	public void setEnderecos(List<EnderecoResponseDTO> enderecos) {
 		this.enderecos = enderecos;
 	}
 

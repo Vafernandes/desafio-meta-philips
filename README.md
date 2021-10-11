@@ -19,7 +19,8 @@
 # Para executar a aplicação do front-end
 
 ### Após realizar o clone ou download do projeto, basta executar 
-$ yarn start
+$ yarn install - para instalar as dependências
+$ yarn start - para executar o projeto
 
 ### Para o back-end, após ser baixado, basta executar o projeto com (Comandos baseados na IDE Eclipse) 
 $ Spring Boot App

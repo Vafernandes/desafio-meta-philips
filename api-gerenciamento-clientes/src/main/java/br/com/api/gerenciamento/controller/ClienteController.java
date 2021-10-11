@@ -73,5 +73,11 @@ public class ClienteController {
 		List<ClienteResponseDTO> clienteResponseDTOs = ClienteResponseDTO.fromModel(clienteService.listarTodos());
 		return ResponseEntity.ok().body(clienteResponseDTOs);
 	}
+	
+	@GetMapping("/pesquisa/{parametro}")
+	public ResponseEntity<List<ClienteResponseDTO>> pesquisaAvancada(@PathVariable String parametro) {
+		List<Cliente> clientes = clienteService.pesquisaAvancada(parametro);
+		return ResponseEntity.ok().body(ClienteResponseDTO.fromModel(clientes));
+	}
 
 }

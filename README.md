@@ -16,7 +16,7 @@
 [![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/nM2NrGSC3Y8)
 
 
-# Para executar a aplicação do front-end
+# Para executar a aplicação
 
 ### Após realizar o clone ou download do projeto, basta executar 
 $ yarn install - para instalar as dependências

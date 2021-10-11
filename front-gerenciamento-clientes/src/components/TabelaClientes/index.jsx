@@ -24,15 +24,29 @@ const TabelaClientes = () => {
     const [enderecos, setEnderecos] = useState([]);
     const [showDialog, setShowDialog] = useState(false);
     const { register, handleSubmit, setValue } = useForm();
+    const [editarEndereco, setEditarEndereco] = useState(false);
+
+    const [enderecoEdit, setEnderecoEdit] = useState({})
 
     const [visible, setVisible] = useState(false);
     const [visibleEndereco, setVisibleEndereco] = useState(false);
     const [currentId, setCurrentId] = useState('');
     const toast = useRef(null);
+    const [pesquisar, setPesquisar] = useState('')
 
     useEffect(() => {
         carregarDadosApi()
     }, []);
+
+    useEffect(() => {
+        realizarPesquisa()
+    }, [pesquisar])
+
+    const realizarPesquisa = async () => {
+        const { data } = await apiClientes.get(`/pesquisa/${pesquisar}`)
+        setClientes([...data])
+        console.log(data)
+    }
 
     const defaultValuesInitialize = () => {
         setCurrentId('')
@@ -59,17 +73,24 @@ const TabelaClientes = () => {
             enderecos
         }
 
-        if(!currentId) {
-            await apiClientes.post('', cliente);
+        if (!currentId) {
+            try {
+                await apiClientes.post('', cliente);
+                toast.current.show({ severity: 'success', summary: 'Criação', detail: 'Registro criado com sucesso!', life: 3000 });
+            } catch (error) {
+                toast.current.show({ severity: 'error', summary: 'Criação', detail: 'Erro ao cadastrar, o CPF informado já está em uso', life: 3000 });
+            }
         } else {
-            const response = await apiClientes.put(`${currentId}`, cliente)
-            console.log(response.data)
+            try {
+                await apiClientes.put(`${currentId}`, cliente)
+            } catch (error) {
+                toast.current.show({ severity: 'error', summary: 'Criação', detail: 'Erro ao atualizar, o CPF informado já está em uso', life: 3000 });
+            }
         }
 
         await carregarDadosApi()
         setShowDialog(false)
         setEnderecos([])
-        toast.current.show({ severity: 'success', summary: 'Criação', detail: 'Registro criado com sucesso!', life: 3000 });
         defaultValuesInitialize()
     };
 
@@ -98,14 +119,6 @@ const TabelaClientes = () => {
         const listaEnderecosTemporario = []
 
         cliente.enderecos.forEach(endereco => {
-            // setLogradouro(endereco.logradouro)
-            // setNumero(endereco.numero)
-            // setComplemento(endereco.complemento)
-            // setBairro(endereco.bairro)
-            // setCep(endereco.cep)
-            // setCidade(endereco.cidade)
-            // setEstado(endereco.estado)
-
             listaEnderecosTemporario.push(endereco)
         })
         setEnderecos([...enderecos, ...listaEnderecosTemporario]);
@@ -131,14 +144,10 @@ const TabelaClientes = () => {
     }
 
     const confirmDeleteAdress = async () => {
-        console.log('currentId', currentId)
         await apiEndereco.delete(`${currentId.id}`)
         setVisibleEndereco(false)
         const response = await apiEndereco.get(`/${currentId.id_cliente}`);
         setEnderecos(response.data)
-        setCurrentId('')
-
-        console.log('enderesos apos exlusao', enderecos)
 
         toast.current.show({ severity: 'success', summary: 'Deletção', detail: 'Registro deletado com sucesso!', life: 3000 });
     }
@@ -146,10 +155,56 @@ const TabelaClientes = () => {
     const actionBodyTemplateAdress = (rowData) => {
         return (
             <>
-                <Button icon="pi pi-pencil" type="button" className="p-button-rounded p-button-info p-mr-2" onClick={() => { }} />
+                <Button icon="pi pi-pencil" type="button" className="p-button-rounded p-button-info p-mr-2" onClick={() => editarDadosEndereco(rowData)} />
                 <Button icon="pi pi-trash" type="button" className="p-button-rounded p-button-warning" onClick={() => selecioanrEndereco(rowData)} />
             </>
         );
+    }
+
+    const editarDadosEndereco = async (rowData) => {
+        const { data } = await apiEndereco.get(`/buscar/${rowData.id}`);
+
+        setLogradouro(data.logradouro)
+        setNumero(data.numero)
+        setComplemento(data.complemento)
+        setBairro(data.bairro)
+        setCep(data.cep)
+        setCidade(data.cidade)
+        setEstado(data.estado)
+        setEditarEndereco(true)
+
+        setEnderecoEdit(data)
+    }
+
+    const updateAdress = async () => {
+
+        const constadress = {
+            id: enderecoEdit.id,
+            logradouro,
+            numero,
+            complemento,
+            bairro,
+            cep,
+            cidade,
+            estado
+        }
+
+        await apiEndereco.put(`${enderecoEdit.id}`, constadress)
+
+        const response = await apiEndereco.get(`/${enderecoEdit.id}`);
+        setEnderecos(response.data)
+
+        toast.current.show({ severity: 'success', summary: 'Atualização', detail: 'Registro atualizado com sucesso!', life: 3000 });
+
+        setLogradouro('')
+        setNumero('')
+        setComplemento('')
+        setBairro('')
+        setCep('')
+        setCidade('')
+        setEstado('')
+        setEnderecoEdit({})
+        setEditarEndereco(false)
     }
 
     const renderFooterDeleteAdress = () => {
@@ -193,19 +248,40 @@ const TabelaClientes = () => {
     }
 
     const accept = async () => {
-        console.log(currentId)
         await apiClientes.delete(`${currentId}`)
         setVisible(false)
         carregarDadosApi()
         toast.current.show({ severity: 'success', summary: 'Deletção', detail: 'Registro deletado com sucesso!', life: 3000 });
     }
 
+    const limparCamposDeEdicao = () => {
+        setEditarEndereco(false)
+
+        setLogradouro('')
+        setNumero('')
+        setComplemento('')
+        setBairro('')
+        setCep('')
+        setCidade('')
+        setEstado('')
+    }
+
+    const header = (
+        <div className="table-header">
+            <h5 className="p-m-2">Gerenciar Clientes</h5>
+            <span className="p-input-icon-left">
+                <i className="pi pi-search" />
+                <InputText placeholder="Pesquisar..." value={pesquisar} onChange={e => setPesquisar(e.target.value)} />
+            </span>
+        </div>
+    );
+
 
     return (
-        <div className="p-d-flex p-flex-column" style={{ margin: 50 }}> 
+        <div className="p-d-flex p-flex-column" style={{ margin: 50 }}>
             <Toast ref={toast} />
             <h1>Gerenciamento de Clientes</h1>
-            
+
             <Card className="p-mb-2">
                 <Button
                     label="Cadastrar novo cliente"
@@ -215,7 +291,7 @@ const TabelaClientes = () => {
             </Card>
 
             <Card className="p-mb-2">
-                <DataTable value={clientes} dataKey="id">
+                <DataTable value={clientes} dataKey="id" header={header}>
                     <Column field="nomeCompleto" header="Nome Completo"></Column>
                     <Column field="cpf" header="CPF"></Column>
                     <Column field="dataNascimento" header="Data de Nascimento"></Column>
@@ -308,13 +384,31 @@ const TabelaClientes = () => {
                             </div>
 
                             <div className="p-mr-5">
-                                <Button
-                                    label="Adicionar endereco"
-                                    className="p-button-raised p-button-help"
-                                    style={{ marginTop: 30 }}
-                                    type="button"
-                                    onClick={() => createAdress()}
-                                />
+                                {
+                                    !editarEndereco ?
+                                        <Button
+                                            label="Adicionar endereco"
+                                            className="p-button-raised p-button-help"
+                                            style={{ marginTop: 30 }}
+                                            type="button"
+                                            onClick={() => createAdress()}
+                                        />
+                                        :
+                                        <>
+                                            <div className="p-d-flex p-flex-wrap p-mb-2">
+                                                <Button
+                                                    label="Atualizar endereco"
+                                                    className="p-button-raised p-button-warning p-mr-2"
+                                                    style={{ marginTop: 30 }}
+                                                    type="button"
+                                                    onClick={() => updateAdress()}
+                                                />
+
+                                                <Button style={{ marginTop: 30 }} icon="pi pi-times"
+                                                    className="p-button-rounded p-button-danger" onClick={() => limparCamposDeEdicao()} />
+                                            </div>
+                                        </>
+                                }
                             </div>
 
                         </div>
@@ -331,7 +425,7 @@ const TabelaClientes = () => {
                             <Column field="cidade" header="Cidade"></Column>
                             <Column field="estado" header="Estado"></Column>
 
-                            <Column body={actionBodyTemplateAdress}></Column>
+                            {currentId ? <Column body={actionBodyTemplateAdress}></Column> : <div></div>}
                         </DataTable>
                     </div>
                     <div className="p-mb-2">

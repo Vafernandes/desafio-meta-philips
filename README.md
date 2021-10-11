@@ -18,7 +18,7 @@
 
 # Para executar a aplicação
 
-### Após realizar o clone ou download do projeto, basta executar 
+### Após realizar o clone ou download do projeto do front , basta executar 
 $ yarn install - para instalar as dependências
 $ yarn start - para executar o projeto
 

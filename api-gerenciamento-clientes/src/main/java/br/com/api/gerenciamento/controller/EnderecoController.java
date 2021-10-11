@@ -53,7 +53,7 @@ public class EnderecoController {
 		return ResponseEntity.ok().body(enderecoResponseDTOs);
 	}
 	
-	@GetMapping("buscar/{id}")
+	@GetMapping("/buscar/{id}")
 	public ResponseEntity<EnderecoResponseDTO> listarPorId(@PathVariable Integer id) {
 		Endereco endereco = enderecoService.buscarPorId(id);
 		return ResponseEntity.ok().body(EnderecoResponseDTO.fromModel(endereco));

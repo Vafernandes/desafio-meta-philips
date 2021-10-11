@@ -27,6 +27,7 @@ public class EnderecoRequestDTO {
 		Endereco endereco = new Endereco();
 		endereco.setLogradouro(enderecoRequestDTO.getLogradouro());
 		endereco.setNumero(enderecoRequestDTO.getNumero());
+		endereco.setComplemento(enderecoRequestDTO.getComplemento());
 		endereco.setCep(enderecoRequestDTO.getCep());
 		endereco.setBairro(enderecoRequestDTO.getBairro());
 		endereco.setCidade(enderecoRequestDTO.getCidade());
